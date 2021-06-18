@@ -5,11 +5,12 @@ from .IDE_model import *
 # from .resnet import *
 from .PCB_model import *
 from .ZJU_model import *
-
+from .Attention_model import *
 __factory = {
     'pcb': PCB_model,
     'ide': IDE_model,
     'zju': ZJU_model,
+    'ATTENTION' : Attention_model,
     # 'inception': inception,
     # 'resnet18': resnet18,
     # 'resnet34': resnet34,

@@ -58,10 +58,11 @@ def main(args):
                  args.combine_trainval, args.crop, args.tracking_icams, args.tracking_fps, args.real, args.synthetic, args.re, args.num_instances,
                  camstyle=0, zju=1, colorjitter=args.colorjitter)
 
-    # Create model
-    model = models.create('zju', num_features=args.features, norm=args.norm,
-                          num_classes=num_classes, last_stride=args.last_stride,
-                          output_feature=args.output_feature, backbone=args.backbone, BNneck=args.BNneck)
+    # Create model###############################################################################################################
+    model = models.create('ATTENTION', img_size=224, num_classes=num_classes, zero_head=False, vis=False)
+    # model = models.create('zju', num_features=args.features, norm=args.norm,
+    #                       num_classes=num_classes, last_stride=args.last_stride,
+    #                       output_feature=args.output_feature, backbone=args.backbone, BNneck=args.BNneck)
 
     # Load from checkpoint
     start_epoch = best_top1 = 0
