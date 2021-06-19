@@ -22,6 +22,7 @@ from reid.utils.logging import Logger
 from reid.utils.my_utils import *
 from reid.utils.serialization import save_checkpoint
 import random 
+from reid.models.Attention_model import VisionTransformer
 '''            
     no crop for duke_tracking by default        check
     RE                                          check
@@ -50,10 +51,11 @@ def main(args):
         get_data(args.dataset, args.data_dir, args.height, args.width, args.batch_size, args.num_workers,
                     args.combine_trainval, args.crop, args.tracking_icams, args.tracking_fps, args.real, args.synthetic, args.re, 0, args.camstyle)
 
-    # Create model
-    model = models.create('ide', num_features=args.features, norm=args.norm,
-                          dropout=args.dropout, num_classes=num_classes, last_stride=args.last_stride,
-                          output_feature=args.output_feature, arch=args.arch)
+    # Create model###############################################################################################################
+    model = VisionTransformer(img_size=256, num_classes=num_classes, zero_head=False, vis=False)
+    # model = models.create('ide', num_features=args.features, norm=args.norm,
+    #                       dropout=args.dropout, num_classes=num_classes, last_stride=args.last_stride,
+    #                       output_feature=args.output_feature, arch=args.arch)
 
     # Load from checkpoint
     start_epoch = best_top1 = 0

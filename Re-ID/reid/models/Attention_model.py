@@ -18,8 +18,6 @@ from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNo
 from torch.nn.modules.utils import _pair
 from scipy import ndimage
 
-import models.configs as configs
-
 from .modeling_resnet import ResNetV2
 
 
@@ -36,6 +34,7 @@ ATTENTION_NORM = "LayerNorm_0"
 MLP_NORM = "LayerNorm_2"
 
 # init the parameters
+# my_config = {'patches':{'size':(16,16)},'hidden_size':768,'transformer':{'mlp_dim':3072,'num_head':12,'num_layers':12,'attention_dropout_rate':0.0,'dropout_rate':0.1},'classifier':'token','representation_size':None}
 my_config = ml_collections.ConfigDict()
 my_config.patches = ml_collections.ConfigDict({'size': (16, 16)})
 my_config.hidden_size = 768
