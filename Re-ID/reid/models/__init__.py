@@ -10,7 +10,7 @@ __factory = {
     'pcb': PCB_model,
     'ide': IDE_model,
     'zju': ZJU_model,
-    'ATTENTION' : Attention_model,
+    'ATTENTION': Attention_model.VisionTransformer,
     # 'inception': inception,
     # 'resnet18': resnet18,
     # 'resnet34': resnet34,

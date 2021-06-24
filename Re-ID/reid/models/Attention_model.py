@@ -6,6 +6,7 @@ from __future__ import print_function
 import copy
 import logging
 import math
+from re import X
 import ml_collections
 
 from os.path import join as pjoin
@@ -16,6 +17,7 @@ import numpy as np
 
 from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm
 from torch.nn.modules.utils import _pair
+from torch.nn import functional as F
 from scipy import ndimage
 
 from .modeling_resnet import ResNetV2
@@ -273,25 +275,31 @@ class Transformer(nn.Module):
 
 
 class VisionTransformer(nn.Module):
-    def __init__(self, config=my_config, img_size=224, num_classes=0, zero_head=False, vis=False):
+    def __init__(self, config=my_config, img_size=256, num_classes=0, zero_head=False, vis=False,num_features=256,norm=False, dropout=0, last_stride=2, output_feature='fc',arch='resnet50'):
         super(VisionTransformer, self).__init__()
         self.num_classes = num_classes
         self.zero_head = zero_head
         self.classifier = config.classifier
+        self.num_features = num_features
+        self.norm = norm
+        self.output_feature = output_feature
 
         self.transformer = Transformer(config, img_size, vis)
         self.head = Linear(config.hidden_size, num_classes)
 
     def forward(self, x, labels=None):
         x, attn_weights = self.transformer(x)
+        out0 = x[:, 0]
+        out0 = F.normalize(out0)
         logits = self.head(x[:, 0])
 
-        if labels is not None:
-            loss_fct = CrossEntropyLoss()
-            loss = loss_fct(logits.view(-1, self.num_classes), labels.view(-1))
-            return loss
-        else:
-            return logits, attn_weights
+        prediction_s = []
+        if self.num_classes > 0:
+            prediction_s.append(logits)
+        # if self.norm:
+        #     out0 = F.normalize(out0)
+        
+        return out0, tuple(prediction_s)
 
     def load_from(self, weights):
         with torch.no_grad():
@@ -299,8 +307,8 @@ class VisionTransformer(nn.Module):
                 nn.init.zeros_(self.head.weight)
                 nn.init.zeros_(self.head.bias)
             else:
-                self.head.weight.copy_(np2th(weights["head/kernel"]).t())
-                self.head.bias.copy_(np2th(weights["head/bias"]).t())
+                self.head.weight.copy_(np2th(weights["head/kernel"]).t()[:len(self.head.weight)])
+                self.head.bias.copy_(np2th(weights["head/bias"]).t()[:len(self.head.weight)])
 
             self.transformer.embeddings.patch_embeddings.weight.copy_(np2th(weights["embedding/kernel"], conv=True))
             self.transformer.embeddings.patch_embeddings.bias.copy_(np2th(weights["embedding/bias"]))

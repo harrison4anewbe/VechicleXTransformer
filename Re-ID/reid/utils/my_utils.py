@@ -72,7 +72,7 @@ def get_data(name, data_dir, height, width, batch_size, workers,
         T.ToTensor(),
         normalizer,
     ])
-
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',num_classes,name, root, real, synthetic)
     if zju:
         train_loader = DataLoader(
             Preprocessor(dataset.train, root=dataset.train_path, transform=train_transformer),
@@ -101,6 +101,7 @@ def get_data(name, data_dir, height, width, batch_size, workers,
                          transform=train_transformer),
             batch_size=camstyle, num_workers=workers,
             shuffle=True, pin_memory=True, drop_last=True)
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',num_classes)
     return dataset, num_classes, train_loader, query_loader, gallery_loader, camstyle_loader
 
 
